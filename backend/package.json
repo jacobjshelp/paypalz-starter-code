@@ -15,7 +15,7 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
-    "@jacobjshelp/paypalztypes": "^1.0.2",
+    "@jacobjshelp/paypalztypes": "^1.0.3",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
