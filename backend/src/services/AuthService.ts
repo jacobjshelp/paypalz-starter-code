@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import prisma from '../../prisma/PrismaClient'
+import { NextFunction, Request, Response } from 'express'
 
 class AuthService {
   constructor(private jwtSecret: string) {}
@@ -9,6 +10,23 @@ class AuthService {
     return jwt.sign({ userId: username }, this.jwtSecret, {
       expiresIn: '1h',
     }) // Token expires in 1 hour
+  }
+  
+  public verifyToken(req: Request, res: Response, next: NextFunction) {
+    const token = req.headers.authorization?.split(' ')[1]
+
+    if (!token) {
+      res.status(401).send('Unauthorized: No token provided')
+      return
+    }
+
+    jwt.verify(token, this.jwtSecret, (err) => {
+      if (err) {
+        res.status(401).send('Unauthorized: Invalid token')
+        return
+      }
+      next()
+    })
   }
 
   public hashPassword(password: string): Promise<string> {

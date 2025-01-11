@@ -8,12 +8,13 @@ if (!jwtSecret) throw new Error('Missing ENV variables')
 
 const memberAndGroupService = new MemberAndGroupService()
 const authService = new AuthService(jwtSecret)
+const verifyToken = authService.verifyToken.bind(authService)
 
 const port = 3000
 const app = express()
 app.use(express.json())
 
-app.get('/groups', async (req: Request, res: Response) => {
+app.get('/groups', verifyToken, async (req: Request, res: Response) => {
   const username = req.query.username
 
   const groups = await memberAndGroupService.getGroupsForUser(
