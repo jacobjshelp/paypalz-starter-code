@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import MemberAndGroupService from './services/MemberAndGroupService'
 import AuthService from './services/AuthService'
 import 'dotenv/config'
+import ExpenseService from './services/ExpenseService'
 
 const jwtSecret = process.env.JWT_SECRET
 if (!jwtSecret) throw new Error('Missing ENV variables')
@@ -9,10 +10,19 @@ if (!jwtSecret) throw new Error('Missing ENV variables')
 const memberAndGroupService = new MemberAndGroupService()
 const authService = new AuthService(jwtSecret)
 const verifyToken = authService.verifyToken.bind(authService)
+const expenseService = new ExpenseService()
 
 const port = 3000
 const app = express()
 app.use(express.json())
+
+app.get('/expenses/:groupID', verifyToken, async (req, res) => {
+  const groupID = Number(req.params.groupID)
+
+  const expenseCollection =
+    await expenseService.getExpenseCollectionForGroup(groupID)
+  res.status(200).json(expenseCollection)
+})
 
 app.get('/groups', verifyToken, async (req: Request, res: Response) => {
   const username = req.query.username
@@ -22,6 +32,14 @@ app.get('/groups', verifyToken, async (req: Request, res: Response) => {
   )
 
   res.status(200).json(groups)
+})
+
+app.post('/expense', verifyToken, async (req, res) => {
+  const body = req.body
+
+  const { status, createdExpense } = await expenseService.addExpense(body)
+
+  res.status(status).json(createdExpense)
 })
 
 app.post('/authenticate', async (req: Request, res: Response) => {
