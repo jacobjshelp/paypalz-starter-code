@@ -2,12 +2,15 @@ import { getGroupsForMember } from '../functions/getGroupsForMember'
 import { Group } from '@jacobjshelp/paypalztypes'
 import { useQuery } from '@tanstack/react-query'
 import GroupListItem from './GroupListItem'
+import { useContextAndErrorIfNull, UserContext } from '../contexts/UserContext'
 
 function AvailableGroups() {
+  const { info } = useContextAndErrorIfNull(UserContext)
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['groups'],
     queryFn: () => {
-      return getGroupsForMember('user-Jayden')
+      if (info) return getGroupsForMember(info.username)
     },
   })
 
