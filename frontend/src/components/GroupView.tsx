@@ -3,6 +3,8 @@ import { useContextAndErrorIfNull, UserContext } from '../contexts/UserContext'
 import { useQuery } from '@tanstack/react-query'
 import { ViewMode } from './Authenticated'
 import Card from './Card'
+import Loader from './Loader'
+import { LeftArrowIcon } from '../icons/LeftArrowIcon'
 
 type MemberGridProps = {
   groupID: number
@@ -24,11 +26,15 @@ function GroupView({ groupID, setViewMode }: MemberGridProps) {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <Loader/>
   }
 
   return (
     <>
+      <LeftArrowIcon
+        onClick={() => setViewMode(ViewMode.GroupList)}
+        className="navigationButton"
+      />
       {data && (
         <>
           <h1>{data.sum}</h1>
